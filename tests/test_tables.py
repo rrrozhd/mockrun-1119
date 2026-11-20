@@ -74,6 +74,16 @@ class FindTablesTest(unittest.TestCase):
     def test_no_lines(self):
         self.assertEqual(find_tables([]), [])
 
+    def test_no_table(self):
+        self.assertEqual(find_tables(["# Title", "", "Some text.", "- item"]), [])
+
+    def test_table_at_start_and_end_of_document(self):
+        lines = ["| a |", "|---|", "| 1 |", "", "middle", "", "| b |", "|---|", "| 2 |"]
+        self.assertEqual(find_tables(lines), [(0, 3), (6, 9)])
+
+    def test_pipe_line_without_alignment_row(self):
+        self.assertEqual(find_tables(["| a | b |", "| 1 | 2 |", "text"]), [])
+
 
 if __name__ == "__main__":
     unittest.main()
