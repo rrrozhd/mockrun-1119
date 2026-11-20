@@ -90,7 +90,8 @@ def main(argv=None):
             elif args.write:
                 if result != text:
                     _replace(path, result.encode("utf-8"))
-                    print(path)
+                    # Bytes, so a name the terminal's encoding lacks still prints.
+                    sys.stdout.buffer.write(os.fsencode(path) + b"\n")
             else:
                 sys.stdout.buffer.write(result.encode("utf-8"))
         except UnicodeDecodeError:

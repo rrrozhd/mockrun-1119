@@ -45,11 +45,14 @@ on the old contents.
 More than one file needs `--check` or `--write`. A file that cannot be read is
 reported and skipped, and the others are still handled.
 
-| Exit code | Meaning                                                        |
-| --------- | -------------------------------------------------------------- |
-| 0         | output written, nothing to change, or `--write` finished       |
-| 1         | `--check` found a table that is not formatted                  |
-| 2         | wrong usage, or a file could not be read or is not valid UTF-8 |
+| Exit code | Meaning                                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 0         | output written, nothing to change, or `--write` finished                                                                 |
+| 1         | `--check` found a table that is not formatted, and no file failed                                                        |
+| 2         | wrong usage, or any file failed: it could not be read, is not valid UTF-8, could not be written, or has other hard links |
+
+Exit code 2 wins: a `--check` run that finds an unformatted file and also
+fails on another file exits 2.
 
 ## Examples
 

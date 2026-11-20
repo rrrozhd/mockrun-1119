@@ -18,12 +18,13 @@ TIDY = (
 )
 
 
-def run(*args, stdin=None):
+def run(*args, stdin=None, env=None):
     return subprocess.run(
         [sys.executable, "-m", "mdtable", *args],
         input=stdin,
         capture_output=True,
         cwd=ROOT,
+        env=env,
     )
 
 
@@ -189,6 +190,19 @@ class SeveralFilesTest(unittest.TestCase):
         self.assertIn(b"messy.md", result.stderr)
         self.assertEqual(self.read("messy.md"), MESSY)
         self.assertEqual(os.listdir(self.directory), ["messy.md"])
+
+    def test_write_reports_names_the_output_encoding_lacks(self):
+        accented = self.write("caf\u00e9.md", MESSY)
+        plain = self.write("next.md", MESSY)
+        result = run(
+            "--write", accented, plain, env={**os.environ, "PYTHONIOENCODING": "ascii"}
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout.splitlines(), [os.fsencode(accented), os.fsencode(plain)]
+        )
+        self.assertEqual(self.read("caf\u00e9.md"), TIDY)
+        self.assertEqual(self.read("next.md"), TIDY)
 
     def test_write_carries_on_after_a_bad_file(self):
         messy = self.write("messy.md", MESSY)
