@@ -6,6 +6,7 @@ import shutil
 import sys
 import tempfile
 
+from . import __version__
 from .format import format_table
 from .tables import find_tables
 
@@ -65,6 +66,7 @@ def main(argv=None):
         action="store_true",
         help="rewrite each FILE in place and print the ones that changed",
     )
+    parser.add_argument("--version", action="version", version=__version__)
     args = parser.parse_args(argv)
     if args.write and not args.files:
         parser.error("--write needs at least one FILE")

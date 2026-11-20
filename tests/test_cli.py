@@ -34,6 +34,11 @@ class CommandLineTest(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.directory = directory.name
 
+    def test_version_wins_over_other_arguments(self):
+        for args in (["--version"], ["--write", "--version"], ["--check", "nope.md", "--version"]):
+            result = run(*args)
+            self.assertEqual((result.stdout, result.returncode), (b"0.1.0\n", 0))
+
     def write(self, data):
         path = os.path.join(self.directory, "doc.md")
         with open(path, "wb") as handle:
