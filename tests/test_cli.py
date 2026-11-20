@@ -39,6 +39,11 @@ class CommandLineTest(unittest.TestCase):
             result = run(*args)
             self.assertEqual((result.stdout, result.returncode), (b"0.1.0\n", 0))
 
+    def test_help_mentions_check(self):
+        result = run("--help")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn(b"--check", result.stdout)
+
     def write(self, data):
         path = os.path.join(self.directory, "doc.md")
         with open(path, "wb") as handle:
