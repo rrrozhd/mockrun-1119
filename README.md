@@ -23,17 +23,33 @@ Read from stdin instead:
 python3 -m mdtable < notes.md
 ```
 
-Check whether a file is already formatted, without writing anything:
+Check whether files are already formatted, without writing anything:
 
 ```sh
-python3 -m mdtable --check notes.md
+python3 -m mdtable --check notes.md docs/*.md
 ```
 
-| Exit code | Meaning                                                 |
-| --------- | ------------------------------------------------------- |
-| 0         | formatted output written, or `--check` found no changes |
-| 1         | `--check` found a table that is not formatted           |
-| 2         | the file could not be read or is not valid UTF-8        |
+Format files in place:
+
+```sh
+python3 -m mdtable --write notes.md docs/*.md
+```
+
+`--write` rewrites only the files that change and prints their paths. Each one
+is written to a temporary file and then renamed over the original, so an
+interrupted run cannot leave half a file. Permission bits are kept, and a
+symlink's target is rewritten rather than the link. A file that has other hard
+links is reported and left alone, because a rename would leave its other names
+on the old contents.
+
+More than one file needs `--check` or `--write`. A file that cannot be read is
+reported and skipped, and the others are still handled.
+
+| Exit code | Meaning                                                        |
+| --------- | -------------------------------------------------------------- |
+| 0         | output written, nothing to change, or `--write` finished       |
+| 1         | `--check` found a table that is not formatted                  |
+| 2         | wrong usage, or a file could not be read or is not valid UTF-8 |
 
 ## Examples
 
@@ -83,7 +99,6 @@ After:
 
 - Width is counted in code points, so wide characters such as CJK text or
   emoji may not line up.
-- There is no in-place mode: redirect the output to a new file.
 
 ## Tests
 
