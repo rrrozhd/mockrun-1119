@@ -13,6 +13,10 @@ class SplitCellsTest(unittest.TestCase):
     def test_escaped_pipe_stays_in_cell(self):
         self.assertEqual(split_cells(r"| a \| b | c |"), [r" a \| b ", " c "])
 
+    def test_backslash_parity(self):
+        self.assertEqual(split_cells("| a\\\\| b |"), [" a\\\\", " b "])
+        self.assertEqual(split_cells("| a\\\\\\| b |"), [" a\\\\\\| b "])
+
     def test_empty_inner_cell_kept(self):
         self.assertEqual(split_cells("| a | |"), [" a ", " "])
 
@@ -70,6 +74,19 @@ class FindTablesTest(unittest.TestCase):
 
     def test_unclosed_fence_runs_to_end(self):
         self.assertEqual(find_tables(["```", "| a |", "|---|"]), [])
+
+    def test_indented_line_ends_table(self):
+        self.assertEqual(find_tables(["a|b", "-|-", "    keep | verbatim"]), [(0, 2)])
+
+    def test_fence_opener_with_pipe_ends_table(self):
+        lines = ["a|b", "-|-", "~~~ demo|x", "| c | d |", "|---|---|", "~~~", "| e |", "|---|"]
+        self.assertEqual(find_tables(lines), [(0, 2), (6, 8)])
+
+    def test_even_backslash_run_leaves_pipe_structural(self):
+        self.assertEqual(find_tables(["a\\\\|b", "-|-", "1\\\\|2"]), [(0, 3)])
+
+    def test_odd_backslash_run_escapes_pipe(self):
+        self.assertEqual(find_tables(["a\\\\\\|b", "-|-"]), [])
 
     def test_no_lines(self):
         self.assertEqual(find_tables([]), [])
