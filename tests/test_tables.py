@@ -1,6 +1,6 @@
 import unittest
 
-from mdtable.detect import find_tables, split_cells
+from mdtable.tables import find_tables, split_cells
 
 
 class SplitCellsTest(unittest.TestCase):
