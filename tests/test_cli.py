@@ -104,6 +104,11 @@ class CommandLineTest(unittest.TestCase):
         fenced = b"```\n|a|b|\n|-|-|\n|1|2|\n```\n"
         self.assertEqual(run(stdin=fenced).stdout, fenced)
 
+    def test_table_in_block_quote_is_untouched(self):
+        quoted = b"> |a|b|\n> |-|-|\n> |1|2|\n"
+        self.assertEqual(run(stdin=quoted).stdout, quoted)
+        self.assertEqual(run("--check", stdin=quoted).returncode, 0)
+
     def test_document_without_tables_is_untouched(self):
         plain = b"no | table here\r\njust text\n\n\n"
         self.assertEqual(run(stdin=plain).stdout, plain)

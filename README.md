@@ -102,6 +102,8 @@ After:
 
 - Width is counted in code points, so wide characters such as CJK text or
   emoji may not line up.
+- A table inside a block quote (lines starting with `>`) is left as it is,
+  and `--check` does not report it.
 
 ## Tests
 
