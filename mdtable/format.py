@@ -1,6 +1,22 @@
 """Format the lines of one Markdown pipe table."""
 
 import re
+import unicodedata
+
+
+def display_width(text: str) -> int:
+    """Return how many columns text takes in a monospace terminal.
+
+    East Asian wide and fullwidth characters take two columns; combining
+    marks, enclosing marks and format characters (such as zero-width joiners
+    and variation selectors) take none; everything else takes one.
+    """
+    width = 0
+    for char in text:
+        if unicodedata.category(char) in ("Mn", "Me", "Cf"):
+            continue
+        width += 2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
+    return width
 
 
 def _split_row(line: str) -> list[str]:
@@ -19,12 +35,13 @@ def _split_row(line: str) -> list[str]:
 
 
 def _pad(cell: str, width: int, marker: str) -> str:
+    space = width - display_width(cell)
     if marker.endswith(":"):
         if marker.startswith(":"):
-            left = (width - len(cell)) // 2
-            return (" " * left + cell).ljust(width)
-        return cell.rjust(width)
-    return cell.ljust(width)
+            left = space // 2
+            return " " * left + cell + " " * (space - left)
+        return " " * space + cell
+    return cell + " " * space
 
 
 def format_table(lines: list[str]) -> list[str]:
@@ -41,7 +58,7 @@ def format_table(lines: list[str]) -> list[str]:
         left = ":" if marker.startswith(":") else ""
         right = ":" if marker.endswith(":") else ""
         min_width = 3 + len(left) + len(right)
-        width = max(min_width, max(len(row[column]) for row in data))
+        width = max(min_width, max(display_width(row[column]) for row in data))
         markers[column] = left + "-" * (width - len(left) - len(right)) + right
         for row in data:
             row[column] = _pad(row[column], width, marker)

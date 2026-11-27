@@ -98,10 +98,36 @@ After:
 | short          |                                   |
 ```
 
+Cells are padded by the width they take in a monospace terminal, not by their
+number of characters, so CJK text and emoji line up. East Asian wide and
+fullwidth characters count as two columns; combining marks and invisible
+format characters (zero-width joiners, variation selectors) count as none.
+
+Before:
+
+```markdown
+| City | Population |
+|---|--:|
+| 東京 | 14 million |
+| Paris 🗼 | 2 million |
+```
+
+After:
+
+```markdown
+| City     | Population |
+| -------- | ---------: |
+| 東京     | 14 million |
+| Paris 🗼 |  2 million |
+```
+
 ## Limits
 
-- Width is counted in code points, so wide characters such as CJK text or
-  emoji may not line up.
+- Display width follows Unicode's East Asian Width property, as most
+  terminals do. A character Unicode does not mark as wide (such as `❤`, even
+  followed by an emoji variation selector) counts as one column, and an emoji sequence joined with zero-width joiners counts as
+  each of its parts, so a terminal that draws these differently may not line
+  them up.
 - A table inside a block quote (lines starting with `>`) is left as it is,
   and `--check` does not report it.
 
