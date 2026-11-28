@@ -34,6 +34,18 @@ class CommandLineTest(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.directory = directory.name
 
+    def test_package_version(self):
+        import mdtable
+
+        self.assertEqual(mdtable.__version__, "0.1.0")
+
+    def test_version_flag_prints_package_version(self):
+        import mdtable
+
+        result = run("--version")
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout.decode().strip(), mdtable.__version__)
+
     def test_version_wins_over_other_arguments(self):
         for args in (["--version"], ["--write", "--version"], ["--check", "nope.md", "--version"]):
             result = run(*args)

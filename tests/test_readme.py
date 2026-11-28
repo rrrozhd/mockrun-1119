@@ -25,6 +25,9 @@ class ReadmeTest(unittest.TestCase):
             with self.subTest(before=before):
                 self.assertEqual(format_text(before), after)
 
+    def test_readme_states_python_requirement(self):
+        self.assertIn("## Requirements\n\nPython 3.9 or newer", read_readme())
+
     def test_readme_is_formatted(self):
         text = read_readme()
         self.assertEqual(format_text(text), text)
