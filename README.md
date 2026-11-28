@@ -5,7 +5,10 @@ its column's width, keeps and obeys the alignment row (`:---` left, `:---:`
 centre, `---:` right), and leaves everything outside a table exactly as it
 was, including line endings and tables inside fenced code blocks.
 
-It needs only Python 3 and its standard library; there is nothing to install.
+## Requirements
+
+Python 3.9 or newer, and only its standard library; there is nothing to
+install.
 
 ## Usage
 
@@ -27,6 +30,12 @@ Check whether files are already formatted, without writing anything:
 
 ```sh
 python3 -m mdtable --check notes.md docs/*.md
+```
+
+Print the version:
+
+```sh
+python3 -m mdtable --version
 ```
 
 Format files in place:
